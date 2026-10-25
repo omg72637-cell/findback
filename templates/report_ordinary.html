@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Report Ordinary Item — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+  <div class="form-card">
+    <div style="margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-4);">
+      <span class="workflow-tag tag-public">Public Listing Flow</span>
+      <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin-top: 4px;">
+        Report an Ordinary Item
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem;">
+        Ordinary items are published on the campus board. Only allowlisted categories are accepted.
+      </p>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Reporting a phone, laptop, or earbuds?</strong>
+      Do not use this form. <a href="{{ url_for('report_electronics') }}" style="color: var(--color-workflow-private); font-weight: 700;">Submit a Confidential Electronics Report</a> instead.
+    </div>
+
+    <form method="POST" action="{{ url_for('report_ordinary') }}">
+      <div class="form-group">
+        <label class="form-label">Report Type</label>
+        <div style="display: flex; gap: var(--space-6);">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="report_type" value="found" checked> I Found This Item
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="report_type" value="lost"> I Lost This Item
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="category" class="form-label">Item Category (Strict Allowlist)</label>
+        <select name="category" id="category" class="form-control" required>
+          <option value="" disabled selected>-- Select an approved ordinary category --</option>
+          {% for cat in allowlist_categories %}
+            <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+        <small class="form-hint">Electronics submitted here are rejected by server security rules.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Item Description</label>
+        <textarea
+          name="description"
+          id="description"
+          rows="3"
+          class="form-control"
+          placeholder="e.g., 750ml blue stainless-steel water flask with stickers on the side"
+          required
+        ></textarea>
+        <small class="form-hint">Provide basic descriptive traits for public identification.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="campus_location" class="form-label">Campus Location</label>
+        <input
+          type="text"
+          name="campus_location"
+          id="campus_location"
+          class="form-control"
+          placeholder="e.g., Central Library, 2nd Floor Reading Room"
+          required
+        >
+        <small class="form-hint">Where the item was found or misplaced on campus.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="date_discovered" class="form-label">Date Found / Lost</label>
+        <input
+          type="date"
+          name="date_discovered"
+          id="date_discovered"
+          class="form-control"
+          value="{{ today_date }}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="contact_email" class="form-label">Your Campus Contact Email</label>
+        <input
+          type="email"
+          name="contact_email"
+          id="contact_email"
+          class="form-control"
+          placeholder="student@campus.local"
+          required
+        >
+        <small class="form-hint">
+          <strong>Privacy Notice:</strong> Your email address is stored for custody desk coordination and is <em>never</em> rendered on the public listings board.
+        </small>
+      </div>
+
+      <button type="submit" class="btn btn-public btn-block">
+        Publish Ordinary Item Report
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

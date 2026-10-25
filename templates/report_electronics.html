@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Confidential Electronics Report — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+  <div class="form-card" style="border-top: 6px solid var(--color-workflow-private);">
+    <div style="margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-4);">
+      <span class="workflow-tag tag-private">Confidential Workflow</span>
+      <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin-top: 4px;">
+        Report an Electronic Device
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem;">
+        Smartphones, laptops, tablets, earbuds, and chargers. <strong>These reports are strictly private and are NEVER published on public listings.</strong>
+      </p>
+    </div>
+
+    <!-- Mandatory Security Warning: Prohibited Credential Defense -->
+    <div class="alert alert-danger" role="alert">
+      <h2 style="font-size: 1.05rem; margin-bottom: 4px;">⚠️ Security Warning: Do Not Enter Passwords or PINs</h2>
+      <p style="font-size: 0.9rem; margin-bottom: 0;">
+        Never provide device unlock PINs, passwords, pattern locks, recovery keys, or biometric credentials. Campus staff will never ask for your secrets. Reports containing passwords or PINs are automatically blocked.
+      </p>
+    </div>
+
+    <!-- Client-side real-time credential warning hint box -->
+    <div id="credential_warning_hint" class="alert alert-warning" style="display: none;" role="alert">
+      <strong>Warning:</strong> You typed text that resembles a password or PIN. Please remove it and provide only safe, non-secret visual traits (e.g., case color, stickers, lockscreen wallpaper description).
+    </div>
+
+    <form method="POST" action="{{ url_for('report_electronics') }}">
+      <div class="form-group">
+        <label class="form-label">Report Type</label>
+        <div style="display: flex; gap: var(--space-6);">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="report_type" value="lost" checked> I Lost This Device
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="radio" name="report_type" value="found"> I Found This Device
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="device_type" class="form-label">Device Type</label>
+        <select name="device_type" id="device_type" class="form-control" required>
+          <option value="" disabled selected>-- Select device type --</option>
+          {% for dtype, label in allowed_device_types %}
+            <option value="{{ dtype }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+        <small class="form-hint">Used as a mandatory compatibility gate during internal matching.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="brand" class="form-label">Brand / Manufacturer</label>
+        <input
+          type="text"
+          name="brand"
+          id="brand"
+          class="form-control"
+          placeholder="e.g., Apple, Samsung, Lenovo, Dell, Sony, OnePlus"
+          maxlength="50"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="model_family" class="form-label">Model Family (Optional)</label>
+        <input
+          type="text"
+          name="model_family"
+          id="model_family"
+          class="form-control"
+          placeholder="e.g., iPhone 13, Galaxy S22, ThinkPad T14"
+          maxlength="50"
+        >
+        <small class="form-hint">Provide general model line if known. Leave blank if unsure.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="primary_color" class="form-label">Primary Color</label>
+        <input
+          type="text"
+          name="primary_color"
+          id="primary_color"
+          class="form-control"
+          placeholder="e.g., Midnight Blue, Space Gray, Silver, Black"
+          maxlength="30"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="campus_location" class="form-label">Campus Location</label>
+        <input
+          type="text"
+          name="campus_location"
+          id="campus_location"
+          class="form-control"
+          placeholder="e.g., CS Lab 302, Library 2nd Floor, Main Auditorium"
+          maxlength="100"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="date_discovered" class="form-label">Date Lost / Found</label>
+        <input
+          type="date"
+          name="date_discovered"
+          id="date_discovered"
+          class="form-control"
+          value="{{ today_date }}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="distinctive_clues" class="form-label">Safe Distinctive Ownership Clues</label>
+        <textarea
+          name="distinctive_clues"
+          id="distinctive_clues"
+          rows="4"
+          class="form-control"
+          placeholder="Describe non-secret traits staff can verify without unlocking: protective case color/material, stickers, lockscreen wallpaper photo description, minor scratches."
+          maxlength="500"
+          required
+        ></textarea>
+        <small class="form-hint">
+          <strong>Permissible:</strong> Case style, decals, lock-screen image subject, superficial scratches.<br>
+          <strong style="color: var(--color-danger);">PROHIBITED:</strong> PINs, passwords, unlock patterns, or biometrics.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="reporter_contact" class="form-label">Your Contact Information</label>
+        <input
+          type="text"
+          name="reporter_contact"
+          id="reporter_contact"
+          class="form-control"
+          placeholder="student@campus.local or +91-98XXXXXXXX"
+          maxlength="100"
+          required
+        >
+        <small class="form-hint">
+          Kept strictly confidential. Only authorized campus desk staff can view this to coordinate in-person verification.
+        </small>
+      </div>
+
+      <button type="submit" class="btn btn-private btn-block">
+        Submit Confidential Report
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

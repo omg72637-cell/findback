@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Conflict Adjudication — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: var(--space-8) 0;">
+  <div class="form-card" style="border-top: 6px solid var(--color-danger, #DC2626);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-4); margin-bottom: var(--space-6);">
+      <div>
+        <span class="workflow-tag tag-private" style="background-color: var(--color-danger, #DC2626); color: #fff;">Conflict Adjudication</span>
+        <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin-top: 4px;">
+          Disputed Competing Claims Queue
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem;">
+          Neutral human review required &bull; Authenticated as <strong>{{ g.admin_user.full_name }}</strong> (Role: <code>{{ g.admin_user.role }}</code>)
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('admin_leads') }}" class="btn btn-secondary btn-sm">&larr; Back to Lead Queue</a>
+      </div>
+    </div>
+
+    <!-- Prominent Warning Banner -->
+    <div class="alert alert-danger" style="margin-bottom: var(--space-6);">
+      <strong>⚠️ Competing Claim Freeze Active:</strong>
+      When multiple claimants match the same found device, automatic progression is strictly locked. Handover tokens cannot be issued until an authorized administrator inspects evidence and dismisses invalid candidate claims.
+    </div>
+
+    {% if disputed_groups %}
+      {% for group in disputed_groups %}
+        <div style="border: 2px solid var(--color-danger, #DC2626); border-radius: var(--radius-lg); margin-bottom: var(--space-8); overflow: hidden;">
+          <div style="background-color: #FEE2E2; padding: var(--space-4); border-bottom: 1px solid #FECACA;">
+            <h2 style="font-size: 1.2rem; color: #991B1B; margin: 0;">
+              Conflict Group: Found Device #{{ group.found_id }} &mdash; {{ group.found_device }}
+            </h2>
+            <p style="font-size: 0.9rem; color: #7F1D1D; margin: 4px 0 0;">
+              Location: <strong>{{ group.found_location }}</strong> &bull; Date Discovered: <strong>{{ group.found_date }}</strong>
+            </p>
+            <div style="font-size: 0.85rem; color: #7F1D1D; margin-top: 6px;">
+              <strong>Custody Clues on Record:</strong> {{ group.found_clues }}
+            </div>
+          </div>
+
+          <div style="padding: var(--space-4);">
+            <h3 style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-4);">
+              Competing Candidate Claims ({{ group.leads|length }} competing leads):
+            </h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-4);">
+              {% for lead in group.leads %}
+                <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-4); background-color: var(--color-surface-white);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+                    <span style="font-weight: 700; color: var(--color-primary);">Lead #{{ lead.id }} (Lost Report #{{ lead.lost_report_id }})</span>
+                    <span class="badge badge-primary">{{ "%.1f"|format(lead.match_score) }}%</span>
+                  </div>
+
+                  <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 4px 0;">
+                    Lost Date: <strong>{{ lead.lost_date }}</strong> &bull; Reported Location: <strong>{{ lead.lost_location }}</strong>
+                  </p>
+
+                  <div style="margin: 8px 0; padding: 8px; background-color: var(--color-surface-alt); border-radius: var(--radius-sm); font-size: 0.85rem;">
+                    <strong>Claimant Non-Secret Clues:</strong><br>
+                    {{ lead.lost_clues }}
+                  </div>
+
+                  <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 4px 0;">
+                    Claimant Contact: <code>{{ lead.lost_contact }}</code>
+                  </p>
+
+                  {% if g.admin_user.role == 'admin' %}
+                    <div style="margin-top: var(--space-4); border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
+                      <form method="POST" action="{{ url_for('admin_lead_status', lead_id=lead.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="dismissed">
+                        <input type="hidden" name="notes" value="Dispute Adjudication: Candidate dismissed after physical clue review.">
+                        <button type="submit" class="btn btn-secondary btn-sm btn-block" style="color: var(--color-danger, #DC2626); border-color: var(--color-danger, #DC2626);">
+                          Dismiss This Competing Claim
+                        </button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <div style="margin-top: var(--space-3); font-size: 0.8rem; color: var(--color-text-muted); text-align: center;">
+                      Adjudication actions restricted to <code>admin</code> role.
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align: center; padding: var(--space-8) var(--space-4); background-color: var(--color-surface-alt); border-radius: var(--radius-md);">
+        <h2 style="font-size: 1.25rem; color: var(--color-text); margin-bottom: 8px;">No Active Competing Claims Flagged</h2>
+        <p style="color: var(--color-text-muted); max-width: 500px; margin: 0 auto;">
+          There are currently no multi-claimant disputes. When multiple lost reports match the same found item, they will appear here automatically for administrative adjudication.
+        </p>
+      </div>
+    {% endif %}
+
+    <div style="margin-top: var(--space-6); padding: var(--space-4); background-color: var(--color-surface-alt); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--color-text-muted);">
+      <strong>Fair Review Principle (GEMINI.md Section 3):</strong> An automated match score is only an investigative lead, never proof of ownership. Competing claims must be resolved using physical, non-secret visual traits verified with student identity.
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Report an Item — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: var(--space-8) 0; text-align: center;">
+  <h1 style="font-size: 2rem; color: var(--color-primary-dark); margin-bottom: var(--space-2);">
+    What type of item are you reporting?
+  </h1>
+  <p style="color: var(--color-text-muted); margin-bottom: var(--space-8);">
+    FindBack 2.0 uses two separate workflows to balance easy discovery for everyday items with total privacy for valuable electronics.
+  </p>
+
+  <div style="display: flex; flex-direction: column; gap: var(--space-6); text-align: left;">
+    <div class="workflow-gate-card public-flow">
+      <span class="workflow-tag tag-public">Public Workflow</span>
+      <h2 style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;">
+        Workflow A: Ordinary Items
+      </h2>
+      <p style="color: var(--color-text-main); margin-bottom: 12px;">
+        For everyday personal possessions on the approved allowlist:
+      </p>
+      <ul style="margin-left: 20px; color: var(--color-text-muted); margin-bottom: 16px; font-size: 0.95rem;">
+        <li>Water bottles, tumblers, and mugs</li>
+        <li>Notebooks, binders, and textbooks</li>
+        <li>Umbrellas and rain gear</li>
+        <li>Eyeglasses and sunglasses</li>
+        <li>Non-electronic stationery</li>
+        <li>Outerwear, jackets, scarves, and general tote bags</li>
+      </ul>
+      <p style="font-size: 0.85rem; color: var(--color-workflow-public); font-weight: 600; margin-bottom: 16px;">
+        Public Listing: These items appear on the public campus board for easy claiming.
+      </p>
+      <a href="{{ url_for('report_ordinary') }}" class="btn btn-public">
+        Continue to Ordinary Items Form &rarr;
+      </a>
+    </div>
+
+    <div class="workflow-gate-card private-flow">
+      <span class="workflow-tag tag-private">Confidential Workflow</span>
+      <h2 style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;">
+        Workflow B: High-Value Electronics
+      </h2>
+      <p style="color: var(--color-text-main); margin-bottom: 12px;">
+        For electronic gadgets and high-value devices:
+      </p>
+      <ul style="margin-left: 20px; color: var(--color-text-muted); margin-bottom: 16px; font-size: 0.95rem;">
+        <li>Smartphones, cellphones, and feature phones</li>
+        <li>Laptops and tablet computers</li>
+        <li>Wireless earbuds and headphones</li>
+        <li>Smartwatches and fitness trackers</li>
+        <li>Power adapters and portable chargers</li>
+      </ul>
+      <p style="font-size: 0.85rem; color: var(--color-workflow-private); font-weight: 600; margin-bottom: 16px;">
+        Strictly Private: Electronics reports NEVER appear publicly. Matching is computed internally to prevent opportunistic theft.
+      </p>
+      <a href="{{ url_for('report_electronics') }}" class="btn btn-private">
+        Continue to Confidential Electronics Form &rarr;
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

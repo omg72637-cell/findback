@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Check Report Status — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: var(--space-8) 0;">
+  <div class="form-card" style="border-top: 6px solid var(--color-workflow-private);">
+    <div style="margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-4);">
+      <span class="workflow-tag tag-private">Confidential Inquiries</span>
+      <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin-top: 4px;">
+        Private Report Status Lookup
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem;">
+        Check the status of your confidential electronics report without exposing any personal data publicly.
+      </p>
+    </div>
+
+    <!-- Lookup Form -->
+    <form method="POST" action="{{ url_for('status_lookup') }}" style="margin-bottom: var(--space-6);">
+      <div class="form-group">
+        <label for="tracking_code" class="form-label">Enter Your Private Tracking Code</label>
+        <input
+          type="text"
+          name="tracking_code"
+          id="tracking_code"
+          class="form-control"
+          placeholder="e.g., TRK-..."
+          maxlength="100"
+          value="{{ submitted_code if submitted_code else '' }}"
+          autocomplete="off"
+          spellcheck="false"
+          required
+        >
+        <small class="form-hint">
+          Your tracking code was provided upon confidential submission. Form inputs are sent via secure POST to prevent URL history or referrer leakage.
+        </small>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        Check Report Status
+      </button>
+    </form>
+
+    <!-- Query Results Section -->
+    {% if query_performed %}
+      <div style="border-top: 1px solid var(--color-border); padding-top: var(--space-6); margin-top: var(--space-6);">
+        {% if status_found %}
+          <!-- Authorized Status Presentation -->
+          <div style="text-align: center; margin-bottom: var(--space-6);">
+            <p style="color: var(--color-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">
+              Current Status
+            </p>
+            <span class="badge badge-{{ status_badge_class }}" style="font-size: 1.05rem; padding: 6px 16px;">
+              {{ status_label }}
+            </span>
+          </div>
+
+          <!-- Educational Status Stepper -->
+          <div class="status-timeline" aria-label="Report Progress Steps">
+            <div class="timeline-step {% if current_step >= 1 %}completed{% endif %} {% if current_step == 1 %}current{% endif %}">
+              <span class="timeline-dot"></span>
+              <span>1. Report Submitted & Recorded</span>
+            </div>
+            <div class="timeline-step {% if current_step >= 2 %}completed{% endif %} {% if current_step == 2 %}current{% endif %}">
+              <span class="timeline-dot"></span>
+              <span>2. Internal Deterministic Matching Search</span>
+            </div>
+            <div class="timeline-step {% if current_step >= 3 %}completed{% endif %} {% if current_step == 3 %}current{% endif %}">
+              <span class="timeline-dot"></span>
+              <span>3. Authorized Staff Review & Verification</span>
+            </div>
+            <div class="timeline-step {% if current_step >= 4 %}completed{% endif %} {% if current_step == 4 %}current{% endif %}">
+              <span class="timeline-dot"></span>
+              <span>4. In-Person Desk Handover</span>
+            </div>
+            <div class="timeline-step {% if current_step >= 5 %}completed{% endif %} {% if current_step == 5 %}current{% endif %}">
+              <span class="timeline-dot"></span>
+              <span>5. Case Resolved</span>
+            </div>
+          </div>
+
+          <!-- Next Steps Guidance -->
+          <div class="alert alert-info" style="text-align: left; margin-top: var(--space-4);">
+            <h2 style="font-size: 1rem; margin-bottom: 4px;">Desk Protocol Notice</h2>
+            <p style="font-size: 0.85rem; margin-bottom: 0;">
+              {{ guidance_text }}
+            </p>
+          </div>
+
+        {% else %}
+          <!-- Anti-Oracle Uniform Response -->
+          <div class="alert alert-warning" style="text-align: left;" role="alert">
+            <h2 style="font-size: 1rem; margin-bottom: 4px;">Status Not Available</h2>
+            <p style="font-size: 0.85rem; margin-bottom: 0;">
+              Status not available for this tracking code. Please verify the code you entered and try again.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Ownership Disclaimer -->
+    <div style="background-color: var(--color-surface-alt); padding: var(--space-4); border-radius: var(--radius-md); margin-top: var(--space-6); font-size: 0.85rem; color: var(--color-text-muted);">
+      <strong>Security & Legal Reminder:</strong> A tracking code is a private status-lookup credential, never proof of ownership. Releasing custody of high-value electronics requires in-person verification of non-secret clues and student identification at the campus desk.
+    </div>
+  </div>
+</div>
+{% endblock %}

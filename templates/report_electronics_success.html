@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Report Submitted — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: var(--space-8) 0;">
+  <div class="form-card" style="border-top: 6px solid var(--color-success); text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: var(--space-2);">🔒</div>
+    <span class="workflow-tag tag-private">Confidential Submission Recorded</span>
+    <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin: var(--space-2) 0;">
+      Your Private Report Has Been Recorded
+    </h1>
+    <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: var(--space-6);">
+      Your device details and distinctive clues are saved securely in our private database and will <strong>never</strong> appear on the public campus board.
+    </p>
+
+    <div class="alert alert-warning" style="text-align: left;" role="alert">
+      <strong>Important: Save Your Private Tracking Code Now</strong><br>
+      Below is your private lookup credential. You will need it to check report status. For student privacy, tracking codes are not listed publicly anywhere on the site.
+    </div>
+
+    <div>
+      <label style="font-weight: 700; color: var(--color-primary-dark); font-size: 0.9rem;">
+        YOUR PRIVATE TRACKING CODE:
+      </label>
+      <div id="tracking_code_display" class="code-display-box" aria-label="Private Tracking Code">
+        {{ tracking_code }}
+      </div>
+      <button
+        type="button"
+        id="copy_tracking_btn"
+        class="btn btn-secondary btn-sm"
+        onclick="navigator.clipboard.writeText('{{ tracking_code }}'); this.innerText='Copied to Clipboard!';"
+      >
+        Copy Code to Clipboard
+      </button>
+    </div>
+
+    <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--color-border); text-align: left;">
+      <h2 style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 8px;">What Happens Next?</h2>
+      <ul style="margin-left: 20px; color: var(--color-text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px;">
+        <li>Our internal matching engine compares your report against opposite reports (lost vs. found).</li>
+        <li>Automated match scores generate <em>investigative leads</em> for authorized campus desk staff. A match score is never automatic proof of ownership.</li>
+        <li>You can check your status anytime on the <strong>Status Lookup</strong> page using this code.</li>
+        <li>If a verified lead is approved, staff will contact you to arrange an in-person physical handover at the custody desk.</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: var(--space-8); display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+      <a href="{{ url_for('status_lookup') }}" class="btn btn-primary">Go to Status Lookup</a>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">Return to Homepage</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

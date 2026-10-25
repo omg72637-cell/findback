@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: 64px 16px; text-align: center;">
+  <div class="alert alert-info" style="display: inline-block; text-align: left; max-width: 540px; margin: 0 auto;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 8px;">404 — Not Found</h1>
+    <p style="margin-bottom: 12px;">
+      The requested page or resource could not be found on FindBack 2.0. Please check the address or return to the main listings.
+    </p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary btn-sm">Return to Home</a>
+  </div>
+</div>
+{% endblock %}

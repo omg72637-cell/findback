@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Handover Token Issued — FindBack 2.0{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: var(--space-8) 0;">
+  <div class="form-card" style="border-top: 6px solid var(--color-primary); text-align: center;">
+    <div style="margin-bottom: var(--space-6);">
+      <span class="workflow-tag tag-private">Single-Use Custody Token</span>
+      <h1 style="font-size: 1.75rem; color: var(--color-primary-dark); margin-top: 4px;">
+        Handover Authorization Token
+      </h1>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem;">
+        Match Lead #{{ lead_id }} approved by <strong>{{ g.admin_user.full_name }}</strong>.
+      </p>
+    </div>
+
+    <div class="alert alert-warning" style="text-align: left; margin-bottom: var(--space-6);">
+      <strong>Critical Security Notice:</strong>
+      This raw verification token is displayed <strong>ONLY ONCE</strong>. In compliance with security standards, the database stores strictly a cryptographic SHA-256 hash. This token cannot be retrieved or viewed again after leaving this page.
+    </div>
+
+    <div style="background-color: var(--color-surface-alt); border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-6);">
+      <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 8px;">
+        Single-Use Token (Valid for 30 Minutes)
+      </div>
+      <div style="font-family: monospace; font-size: 2rem; font-weight: 700; color: var(--color-primary); letter-spacing: 0.1em; user-select: all;" id="raw-token-box">
+        {{ raw_token }}
+      </div>
+    </div>
+
+    <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-6);">
+      Provide this token to the Central Custody Desk officer or student claimant to complete supervised in-person verification.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: var(--space-4); flex-wrap: wrap;">
+      <a href="{{ url_for('admin_handover') }}" class="btn btn-primary">
+        Go to Handover Custody Desk &rarr;
+      </a>
+      <a href="{{ url_for('admin_leads') }}" class="btn btn-secondary">
+        &larr; Return to Review Queue
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

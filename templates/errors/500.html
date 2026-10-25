@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}500 — Server Error{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="padding: 64px 16px; text-align: center;">
+  <div class="alert alert-danger" style="display: inline-block; text-align: left; max-width: 540px; margin: 0 auto;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 8px;">500 — Internal Server Error</h1>
+    <p style="margin-bottom: 12px;">
+      An unexpected internal error occurred while processing your request. Zero sensitive data has been exposed. Please return to the homepage or contact campus desk staff if the problem persists.
+    </p>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm">Return to Home</a>
+  </div>
+</div>
+{% endblock %}

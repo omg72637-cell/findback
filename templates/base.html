@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FindBack 2.0 — Campus Lost & Found{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="{{ url_for('index') }}" class="brand-link">
+        FindBack 2.0
+        <span class="brand-badge">Campus Hub</span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('index') }}" class="nav-link">Browse Items</a></li>
+          <li><a href="{{ url_for('report_choice') }}" class="nav-link">Report Item</a></li>
+          <li><a href="{{ url_for('status_lookup') }}" class="nav-link">Status Lookup</a></li>
+          {% if session.get('admin_user_id') %}
+            <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_leads') }}" class="nav-link">Queue</a></li>
+            <li><a href="{{ url_for('admin_disputes') }}" class="nav-link">Disputes</a></li>
+            <li><a href="{{ url_for('admin_handover') }}" class="nav-link">Handover Desk</a></li>
+            <li>
+              <form method="POST" action="{{ url_for('admin_logout') }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-secondary btn-sm" style="min-height: 32px; padding: 4px 10px;">Logout</button>
+              </form>
+            </li>
+          {% else %}
+            <li><a href="{{ url_for('admin_login') }}" class="nav-link">Staff Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'message' else 'info' }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main id="main-content" class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <p><strong>FindBack 2.0</strong> — Campus Custody & Safe Handover System</p>
+        <p>Physical Custody: Central Campus Lost & Found Custody Desk</p>
+      </div>
+      <div>
+        <p>First-Year B.Tech Engineering Project Prototype</p>
+        <p>Zero public electronics leakage | Supervised desk handover</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}FindBack 2.0 — Public Ordinary Items Feed{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <h1 class="hero-title">Find What Was Lost. Protect What Matters.</h1>
+  <p class="hero-subtitle">
+    The campus lost-and-found built with strict privacy: ordinary everyday items are publicly searchable, while high-value electronics are kept strictly confidential.
+  </p>
+
+  <div class="workflow-gate-grid">
+    <div class="workflow-gate-card public-flow">
+      <div>
+        <span class="workflow-tag tag-public">Public Workflow</span>
+        <h2>Ordinary Everyday Items</h2>
+        <p>Water bottles, umbrellas, notebooks, eyeglasses, stationery, outerwear, and tote bags.</p>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="{{ url_for('report_ordinary') }}" class="btn btn-public">Report Ordinary Item</a>
+      </div>
+    </div>
+
+    <div class="workflow-gate-card private-flow">
+      <div>
+        <span class="workflow-tag tag-private">Confidential Workflow</span>
+        <h2>High-Value Electronics</h2>
+        <p>Smartphones, laptops, tablets, earbuds, chargers, and smartwatches. <em>Never published publicly.</em></p>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="{{ url_for('report_electronics') }}" class="btn btn-private">Submit Private Report</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feed-controls" aria-label="Search and Filter Ordinary Items">
+  <form method="GET" action="{{ url_for('index') }}" class="search-bar-form">
+    <input
+      type="text"
+      name="q"
+      value="{{ search_query }}"
+      placeholder="Search ordinary items by description or campus location..."
+      class="search-input"
+      aria-label="Search ordinary items"
+    >
+    <button type="submit" class="btn btn-primary">Search</button>
+    {% if search_query or current_category %}
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">Clear</a>
+    {% endif %}
+  </form>
+
+  <nav class="filter-pills" aria-label="Category Filters">
+    <a
+      href="{{ url_for('index', q=search_query) }}"
+      class="pill {% if not current_category %}active{% endif %}"
+    >
+      All Categories
+    </a>
+    {% for cat in allowlist_categories %}
+      <a
+        href="{{ url_for('index', category=cat, q=search_query) }}"
+        class="pill {% if current_category == cat %}active{% endif %}"
+      >
+        {{ cat }}
+      </a>
+    {% endfor %}
+  </nav>
+</section>
+
+<section aria-label="Available Ordinary Items">
+  {% if items %}
+    <div class="items-grid">
+      {% for item in items %}
+        <article class="item-card">
+          <div>
+            <div class="item-card-header">
+              <span class="item-category">{{ item.category }}</span>
+              <span class="badge badge-{{ item.status }}">{{ item.status }}</span>
+            </div>
+            <p class="item-description">{{ item.description }}</p>
+          </div>
+          <div class="item-meta">
+            <span><strong>Location:</strong> {{ item.campus_location }}</span>
+            <span><strong>Discovered:</strong> {{ item.date_discovered }}</span>
+            <span style="margin-top: 8px;">
+              <small style="color: var(--color-workflow-public); font-weight: 600;">
+                Inquire at Campus Custody Desk
+              </small>
+            </span>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" style="text-align: center; padding: 48px 16px;">
+      <h3>No ordinary items found</h3>
+      <p>There are currently no listings matching your selection. Try clearing your filters or check back later.</p>
+      <div style="margin-top: 16px;">
+        <a href="{{ url_for('report_ordinary') }}" class="btn btn-public">Report a Found Item</a>
+      </div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
