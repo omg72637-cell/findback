@@ -1,8 +1,8 @@
 """
 FindBack 2.0 - Database Initialization and Synthetic Seeding Script
 
-Initializes the local SQLite database schema and populates it with safe,
-fictitious demonstration items and initial administrative user accounts.
+Initializes the local SQLite or cloud PostgreSQL database schema and populates
+it with safe, fictitious demonstration items and initial administrative user accounts.
 """
 
 import os
@@ -10,10 +10,16 @@ import sqlite3
 import sys
 from pathlib import Path
 from werkzeug.security import generate_password_hash
+from database.db import (
+    is_postgres_uri,
+    HAS_PSYCOPG2,
+    PostgresConnectionWrapper,
+    SCHEMA_PATH,
+    SCHEMA_PG_PATH,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "findback.db"
-SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
 
 def load_dotenv(env_path: Path = BASE_DIR / ".env") -> None:
     """
@@ -41,24 +47,40 @@ def init_database(db_path=None, load_env=True):
     Initialize tables and insert initial test fixture records.
 
     Args:
-        db_path: Path or string to the SQLite database file. If None, uses
-                 DATABASE environment variable or defaults to findback.db.
+        db_path: Path or connection string. If None, uses DATABASE_URL
+                 or DATABASE environment variable or defaults to findback.db.
         load_env: Whether to attempt loading variables from local .env if present.
     """
     if load_env:
         load_dotenv()
 
-    if db_path is None:
-        db_path = os.environ.get("DATABASE") or DB_PATH
-    db_path = Path(db_path)
+    db_uri = db_path or os.environ.get("DATABASE_URL") or os.environ.get("DATABASE") or str(DB_PATH)
 
-    print(f"Initializing database at: {db_path}")
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON;")
+    if is_postgres_uri(str(db_uri)):
+        if not HAS_PSYCOPG2:
+            raise RuntimeError(
+                "PostgreSQL database configured via DATABASE_URL, but 'psycopg2' is not installed. "
+                "Ensure 'psycopg2-binary' is installed in the active environment."
+            )
+        import psycopg2
+        from psycopg2.extras import DictCursor
+        conn_str = str(db_uri)
+        if conn_str.startswith("postgres://"):
+            conn_str = "postgresql://" + conn_str[len("postgres://"):]
+        print("Initializing PostgreSQL database schema via DATABASE_URL...")
+        raw_conn = psycopg2.connect(conn_str, cursor_factory=DictCursor)
+        conn = PostgresConnectionWrapper(raw_conn)
+        schema_file = SCHEMA_PG_PATH
+    else:
+        db_path_obj = Path(db_uri)
+        print(f"Initializing SQLite database at: {db_path_obj}")
+        conn = sqlite3.connect(db_path_obj)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON;")
+        schema_file = SCHEMA_PATH
 
     try:
-        with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
+        with open(schema_file, "r", encoding="utf-8") as f:
             conn.executescript(f.read())
 
         cur = conn.cursor()
@@ -103,7 +125,9 @@ def init_database(db_path=None, load_env=True):
 
         # Check if ordinary items already exist
         cur.execute("SELECT COUNT(*) as count FROM ordinary_items")
-        if cur.fetchone()["count"] == 0:
+        count_row = cur.fetchone()
+        count = count_row["count"] if hasattr(count_row, "keys") and "count" in count_row.keys() else count_row[0]
+        if count == 0:
             sample_ordinary = [
                 (
                     "found",
@@ -163,7 +187,7 @@ if __name__ == "__main__":
     target_db = None
     if len(sys.argv) > 1:
         if sys.argv[1] in ("-h", "--help"):
-            print("Usage: python database/init_db.py [optional_path_to_db]")
+            print("Usage: python database/init_db.py [optional_path_or_db_url]")
             sys.exit(0)
         target_db = sys.argv[1]
     init_database(db_path=target_db)

@@ -102,10 +102,27 @@ def create_app(test_config=None):
     # Register database teardown
     init_db_app(app)
 
+    # Configure reverse-proxy header handling when running behind production load balancers (e.g. Render)
+    if not app.config.get("TESTING"):
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     # Register session-bound CSRF token generator for templates
     @app.context_processor
     def inject_csrf_token():
         return dict(csrf_token=generate_csrf_token)
+
+    # -------------------------------------------------------------
+    # Production Health Check Endpoint
+    # -------------------------------------------------------------
+
+    @app.route("/healthz")
+    def healthz():
+        """
+        Lightweight health check endpoint for deployment monitoring.
+        Returns status 200 without exposing any sensitive configuration or data.
+        """
+        return {"status": "ok"}, 200
 
     # -------------------------------------------------------------
     # Public Ordinary Items Routes (Workflow A)

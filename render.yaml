@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: findback
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python database/init_db.py && gunicorn "app:create_app()" --bind 0.0.0.0:$PORT --workers 2 --threads 2
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false
+      - key: INITIAL_DESK_STAFF_PASSWORD
+        sync: false

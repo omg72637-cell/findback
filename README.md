@@ -101,13 +101,13 @@ Open your browser and navigate to: **`http://127.0.0.1:5000`**
 
 ## 2. Running Automated Tests
 
-FindBack 2.0 maintains an empirically verified, test-driven validation suite with **88 passing tests** across 8 test modules:
+FindBack 2.0 maintains an empirically verified, test-driven validation suite with **95 passing tests** across 9 test modules:
 
 ```bash
 pytest -v
 ```
 
-*Expected execution result:* **`88 passed in ~17s`** (0 failures).
+*Expected execution result:* **`95 passed in ~16s`** (0 failures).
 
 ---
 
@@ -115,6 +115,7 @@ pytest -v
 
 | Document | Purpose |
 | :--- | :--- |
+| **[`DEPLOYMENT.md`](file:///C:/Users/omwor/Documents/findback/DEPLOYMENT.md)** | Production deployment guide for free hosting on Render and persistent PostgreSQL on Neon. |
 | **[`DEMO_SCRIPT.md`](file:///C:/Users/omwor/Documents/findback/DEMO_SCRIPT.md)** | Timed (7–10 minute) step-by-step live demonstration script with talking points and jury fallbacks. |
 | **[`USER_GUIDE.md`](file:///C:/Users/omwor/Documents/findback/USER_GUIDE.md)** | End-user and staff operational manual (Workflow A, Workflow B, Status Stepper, Custody Desk). |
 | **[`SETUP_AND_TESTING.md`](file:///C:/Users/omwor/Documents/findback/SETUP_AND_TESTING.md)** | Detailed developer setup, test suite details, demonstration reset runbook, and production deployment notes. |

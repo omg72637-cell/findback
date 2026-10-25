@@ -49,8 +49,8 @@ class Config:
             "You can generate one using: python -c 'import secrets; print(secrets.token_hex(32))'"
         )
 
-    # SQLite Database location
-    DATABASE = os.environ.get("DATABASE", str(BASE_DIR / "findback.db"))
+    # Database location: supports DATABASE_URL (e.g. Neon/Supabase PostgreSQL) or local SQLite
+    DATABASE = os.environ.get("DATABASE_URL") or os.environ.get("DATABASE", str(BASE_DIR / "findback.db"))
 
     # Security: Session cookie hardening
     # Prevents client-side scripts from reading the session cookie (XSS protection)
@@ -69,3 +69,4 @@ class TestConfig(Config):
     """Configuration for automated test fixtures."""
     TESTING = True
     DATABASE = ":memory:"
+    DATABASE_URL = ":memory:"
