@@ -21,7 +21,8 @@ from flask import (
     url_for,
     flash,
     session,
-    g
+    g,
+    current_app,
 )
 from werkzeug.security import check_password_hash
 from config import Config
@@ -369,9 +370,14 @@ def create_app(test_config=None):
             try:
                 from matching.service import find_and_record_matches
                 find_and_record_matches(new_report_id)
-            except Exception:
-                # Security rule: never expose internal matching exceptions to the user
-                pass
+            except Exception as exc:
+                # Security rule: never expose internal matching exceptions to the user,
+                # and strictly scrub report contents, clues, or student contacts from logs.
+                current_app.logger.error(
+                    "Deterministic matching engine failed for report ID %s: %s",
+                    new_report_id,
+                    type(exc).__name__,
+                )
 
             # Render confirmation receipt displaying code once to submitter
             return render_template(
